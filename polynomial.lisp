@@ -2,9 +2,10 @@
 
 ;;;; polynomials
 ;;;;
-;;;; polynomials are simply a variable and a list of all nonzero monomials,
-;;;; each monomial is a cons containing the coefficient, which is either
-;;;; rational or a polynomial in another variable, and the power
+;;;; polynomials are simply a variable and a list of all nonzero monomials
+;;;; beginning with a list head containing nil instead of a monomial, each
+;;;; monomial is a cons containing the coefficient, which is either rational
+;;;; or a polynomial in another variable, and the power
 
 (defclass polynomial ()
   ((variable-name

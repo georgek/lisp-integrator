@@ -29,10 +29,6 @@
 (defmethod 2arg/ ((obj1 number) (obj2 number))
   (cl:/ obj1 obj2))
 
-;; after versions reduce constant polynomials
-(defmethod 2arg+ :after (obj1 obj2)
-  (print "yup"))
-
 ;; n-ary versions
 (defun + (&rest objs)
   (if (null objs)
