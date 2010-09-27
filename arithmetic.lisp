@@ -16,6 +16,9 @@
 (defgeneric 2arg/ (obj1 obj2)
   (:documentation "Divides an object by the other"))
 
+(defgeneric ^ (base power)
+  (:documentation "Multiplies base together power times"))
+
 ;; methods for numbers
 (defmethod 2arg+ ((obj1 number) (obj2 number))
   (cl:+ obj1 obj2))
@@ -28,6 +31,9 @@
 
 (defmethod 2arg/ ((obj1 number) (obj2 number))
   (cl:/ obj1 obj2))
+
+(defmethod ^ ((base number) power)
+  (expt base power))
 
 ;; n-ary versions
 (defun + (&rest objs)

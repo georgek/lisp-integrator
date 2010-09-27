@@ -290,6 +290,16 @@ R such that t * dividend = Q * divisor + R"
 raised if the division was not exact."
   (copy-poly dividend))
 
+;; exponentiation
+(defmethod ^ ((base polynomial) power)
+  (let ((result (copy-poly base)))
+    (do ((mask (ash 1 (- (integer-length power) 2)) (ash mask -1)))
+        ((= mask 0))
+      (if (logtest mask power)
+          (setf result (* (* result result) base))
+          (setf result (* result result))))
+    result))
+
 ;;; general polynomial functions
 
 (defmethod zerop ((object polynomial))
