@@ -1,0 +1,5 @@
+#emacs autosaves
+*~
+
+#compiled files
+*.fasl
