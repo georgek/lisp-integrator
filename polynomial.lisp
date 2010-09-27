@@ -147,8 +147,8 @@ from a parse tree."
                (funcall op (coefficient (car (nextm m)))
                         (coefficient monomial)))
          ;; remove zeros
-         (if (= (coefficient (car (nextm m))) 0)
-             (setf (cdr m) (cdr (nextm m))))
+         (when (= (coefficient (car (nextm m))) 0)
+           (setf (cdr m) (cdr (nextm m))))
          )))))
 
 ;; polynomial addition and subtraction have the same algorithm but using a
@@ -265,8 +265,6 @@ that dividend = Q * divisor + R"
            (R (copy-poly dividend))
            (d (- (deg R variable-name1) (deg divisor variable-name1)))
            (S))
-      (format t "d: ~a~%" d)
-      (format t "R: ~a~%" R)
       (do ()
           ((or
             (zerop R)
@@ -276,7 +274,6 @@ that dividend = Q * divisor + R"
                                    (lc divisor variable-name1)) d)) 
         (setf Q (+ Q S))
         (setf R (- R (* divisor S)))
-        (format t "R: ~a~%divisor: ~a~%" R divisor)
         (setf d (- (deg R variable-name1) (deg divisor variable-name1))))
       (values Q R))))
 
