@@ -49,7 +49,9 @@ from a parse tree."
                  :monomials (list nil (monomial coefficient power))))
 
 (defun make-zero-poly (variable)
-  "Makes a zero polynomial in the given variable"
+  "Makes a zero polynomial in the given variable, this shouldn't generally be
+used, but is useful in combination with add-monomial for building up
+polynomials."
   (make-instance 'polynomial
                  :variable-name variable
                  :monomials (list nil)))
