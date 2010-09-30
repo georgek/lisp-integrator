@@ -326,7 +326,11 @@ R such that t * dividend = Q * divisor + R"
 (defun polynomial-exact-division (dividend divisor)
   "Polynomial exact division for polynomials which divide exactly, an error is
 raised if the division was not exact."
-  (copy-poly dividend))
+  (multiple-value-bind (quotient remainder)
+      (polynomial-division dividend divisor)
+    (when (not (zerop remainder))
+      (error "Exact division was not exact!"))
+    quotient))
 
 ;; exponentiation
 (defmethod ^ ((base polynomial) power)
