@@ -466,6 +466,23 @@ raised if the division was not exact."
             (coefficient (car (nextm monomials))))
         polynomial)))
 
+;; gets the "rational part" of the polynomial ie. the lcm of the coefficients
+;; of a multivariate polynomial
+(defgeneric poly-rat-part (polynomial))
+
+(defmethod poly-rat-part ((polynomial rational))
+  (denominator polynomial))
+
+(defmethod poly-rat-part ((polynomial polynomial))
+  (with-poly polynomial
+    (cond
+      ((zerop polynomial)
+       1)
+      (t
+       (apply 'lcm
+              (mapcar (lambda (x) (poly-rat-part (coefficient x)))
+                      (cdr monomials)))))))
+
 (defgeneric content (polynomial)
   (:documentation "Returns the content of the polynomial, which is the gcd of
   its coefficients."))
