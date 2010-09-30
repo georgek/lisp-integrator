@@ -1,10 +1,12 @@
 (in-package :gk-integrator)
 
 ;;; lexing stuff
+(defun make-poly-node (var)
+  (make-mono-poly (intern var) 1 1))
 
 (deflexer scan-math ()
   ("0|[1-9][0-9]*" integer parse-integer)
-  ("[a-zA-Z]+" variable intern)
+  ("[a-zA-Z]+" variable make-poly-node)
   ("-" - intern)
   ("\\+" + intern)
   ("\\*" * intern)
@@ -67,6 +69,7 @@
           (let ((tree (parse-with-lexer (math-lexer input) *math-parser*)))
             (print-prefix tree)
             (print-infix tree)
-            (format t "~%"))))))
+            (format t "~%~%")
+            (format t "~a~%" (eval tree)))))))
 
 
