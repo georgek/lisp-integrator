@@ -392,11 +392,23 @@ raised if the division was not exact."
 
 ;;; general polynomial functions
 
+;; predicates
+
 (defmethod zerop ((object polynomial))
   (with-poly object
     (if (endp (cdr monomials))
         t
         nil)))
+
+(defmethod minusp ((object polynomial))
+  (if (zerop object)
+      nil
+      (minusp (lc object (slot-value object 'variable-name)))))
+
+(defmethod plusp ((object polynomial))
+  (if (zerop object)
+      nil
+      (minusp (lc object (slot-value object 'variable-name)))))
 
 ;; leading coefficient
 (defgeneric lc (obj variable)
