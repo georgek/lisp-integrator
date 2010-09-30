@@ -56,13 +56,7 @@ polynomials."
                  :variable-name variable
                  :monomials (list nil)))
 
-(defgeneric copy-poly (polynomial)
-  (:documentation "Returns a copy of the polynomial."))
-
-(defmethod copy-poly ((polynomial rational))
-  polynomial)
-
-(defmethod copy-poly ((polynomial polynomial))
+(defmethod copy ((polynomial polynomial))
   "Get a new copy of the polynomial."
   (with-poly polynomial
     (make-instance 'polynomial
@@ -187,7 +181,7 @@ polynomials."
 
 (defmethod 2arg+ ((obj1 polynomial) (obj2 rational))
   (if (zerop obj2)
-      (copy-poly obj1)
+      (copy obj1)
       (with-poly obj1
         (copy-into-result-poly result variable-name monomials
           (add-monomial (monomial obj2 0) result #'+)
@@ -203,7 +197,7 @@ polynomials."
 
 (defmethod 2arg- ((obj1 polynomial) (obj2 rational))
   (if (zerop obj2)
-      (copy-poly obj1)
+      (copy obj1)
       (with-poly obj1
         (copy-into-result-poly result variable-name monomials
           (add-monomial (monomial obj2 0) result #'-)
@@ -271,7 +265,7 @@ remainder R such that dividend = Q * divisor + R"))
   (values (/ dividend divisor) 0))
 
 (defmethod polynomial-division ((dividend rational) (divisor polynomial))
-  (values 0 (copy-poly dividend)))
+  (values 0 (copy dividend)))
 
 (defmethod polynomial-division ((dividend polynomial) (divisor polynomial))
   (with-polys dividend divisor
@@ -280,7 +274,7 @@ remainder R such that dividend = Q * divisor + R"))
       ((var-higher-rank-p variable-name1 variable-name2)
        ;; this might divide - divide each coefficeint of the LHS by the RHS,
        ;; if one or more does not divide then the whole thing does not divide
-       (let ((Q (copy-poly dividend)))
+       (let ((Q (copy dividend)))
          (with-poly Q
            (dolist (m (nextm monomials))
              (multiple-value-bind (quotient remainder)
@@ -292,16 +286,16 @@ remainder R such that dividend = Q * divisor + R"))
                  (t
                   ;; doesn't divide
                   (return-from polynomial-division
-                    (values 0 (copy-poly dividend)))))))
+                    (values 0 (copy dividend)))))))
            ;; fully divided
            (values Q 0))))
       ((var-higher-rank-p variable-name2 variable-name1)
        ;; this definitely does not divide
-       (values 0 (copy-poly dividend)))
+       (values 0 (copy dividend)))
       ;; same variable
       (t
        (let* ((Q 0)
-              (R (copy-poly dividend))
+              (R (copy dividend))
               (d (- (deg R variable-name1) (deg divisor variable-name1)))
               (S))
          (do ()
@@ -323,7 +317,7 @@ remainder R such that dividend = Q * divisor + R"))
 (defmethod polynomial-pseudo-division
     ((dividend rational) (divisor rational))
   ;; Q=A, R=0
-  (values (copy-poly divisor) 0))
+  (values (copy divisor) 0))
 
 (defmethod polynomial-pseudo-division ((dividend polynomial) (divisor rational))
   ;; Q=A*B^deg(A), R=0
@@ -332,7 +326,7 @@ remainder R such that dividend = Q * divisor + R"))
    0))
 
 (defmethod polynomial-pseudo-division ((dividend rational) (divisor polynomial))
-  (values 0 (copy-poly dividend)))
+  (values 0 (copy dividend)))
 
 (defmethod polynomial-pseudo-division ((dividend polynomial) (divisor polynomial))
   "Polynomial pseudo division, returns pseudo-quotient Q and pseudo-remainder
@@ -348,7 +342,7 @@ R such that t * dividend = Q * divisor + R"
         (* dividend (^ divisor (deg dividend variable-name1)))
         0))
       ((var-higher-rank-p variable-name2 variable-name1)
-       (values 0 (copy-poly dividend)))
+       (values 0 (copy dividend)))
       ;; same varibale
       ((> (deg divisor variable-name1) (deg dividend variable-name2))
        ;; won't divide so Q=0, R=0
@@ -357,7 +351,7 @@ R such that t * dividend = Q * divisor + R"
        (let* ((v variable-name1)
               (N (+ (- (deg dividend v) (deg divisor v)) 1))
               (Q 0)
-              (R (copy-poly dividend))
+              (R (copy dividend))
               (b (lc divisor v))
               (S))
          (loop with delta = (- (deg R v) (deg divisor v))
@@ -377,18 +371,6 @@ raised if the division was not exact."
     (when (not (zerop remainder))
       (error "Exact division was not exact!"))
     quotient))
-
-;; exponentiation
-(defmethod ^ ((base polynomial) power)
-  (if (zerop power)
-      1
-      (let ((result (copy-poly base)))
-        (do ((mask (ash 1 (- (integer-length power) 2)) (ash mask -1)))
-            ((= mask 0))
-          (if (logtest mask power)
-              (setf result (* (* result result) base))
-              (setf result (* result result))))
-        result)))
 
 ;;; general polynomial functions
 
@@ -515,3 +497,9 @@ raised if the division was not exact."
 (defun prem (dividend divisor)
   "Returns the pseudo-quotient of the dividend and divisor."
   (cadr (multiple-value-list (polynomial-pseudo-division dividend divisor))))
+
+(defmethod numerator ((object polynomial))
+  object)
+
+(defmethod denominator ((object polynomial))
+  1)

@@ -2,4 +2,4 @@
 
 (defpackage :gk-integrator
   (:use :common-lisp :cl-ppcre :dso-lex :yacc)
-  (:shadow :+ :- :* :/ :zerop :minusp :plusp :gcd))
+  (:shadow :+ :- :* :/ :zerop :minusp :plusp :gcd :numerator :denominator))

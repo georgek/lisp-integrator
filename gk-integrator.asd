@@ -8,6 +8,7 @@
                (:file "utils")
                (:file "tree")
                (:file "parser")
+               (:file "generic")
                (:file "predicates")
                (:file "arithmetic")
                (:file "polynomial")

@@ -67,9 +67,9 @@
       (if (string= input "quit")
           (setf end t)
           (let ((tree (parse-with-lexer (math-lexer input) *math-parser*)))
-            (print-prefix tree)
-            (print-infix tree)
-            (format t "~%~%")
+            ;; (print-prefix tree)
+            ;; (print-infix tree)
+            ;; (format t "~%~%")
             (format t "~a~%" (eval tree)))))))
 
 

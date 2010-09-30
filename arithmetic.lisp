@@ -35,6 +35,18 @@
 (defmethod ^ ((base number) power)
   (expt base power))
 
+;; generic version
+(defmethod ^ (base power)
+  (if (zerop power)
+      1
+      (let ((result (copy base)))
+        (do ((mask (ash 1 (- (integer-length power) 2)) (ash mask -1)))
+            ((= mask 0))
+          (if (logtest mask power)
+              (setf result (* (* result result) base))
+              (setf result (* result result))))
+        result)))
+
 ;; n-ary versions
 (defun + (&rest objs)
   (if (null objs)
@@ -61,3 +73,15 @@
          (2arg/ 1 (car objs)))
         (t
          (reduce #'2arg/ objs))))
+
+(defgeneric numerator (object)
+  (:documentation "Returns the numerator."))
+
+(defmethod numerator ((object rational))
+  (cl:numerator object))
+
+(defgeneric denominator (object)
+  (:documentation "Returns the denominator."))
+
+(defmethod denominator ((object rational))
+  (cl:denominator object))
