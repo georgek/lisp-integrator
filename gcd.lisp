@@ -8,7 +8,7 @@
 (defun gcd (&rest polynomials)
   (cond
     ((null polynomials)
-     0)
+     (cl:gcd))
     ((endp (cdr polynomials))
      (car polynomials))
     (t
