@@ -318,7 +318,24 @@ remainder R such that dividend = Q * divisor + R"))
          (values (reduce-constant-poly Q)
                  (reduce-constant-poly R)))))))
 
-(defun polynomial-pseudo-division (dividend divisor)
+(defgeneric polynomial-pseudo-division (dividend divisor)
+  (:documentation "Pseudo-divide."))
+
+(defmethod polynomial-pseudo-division
+    ((dividend rational) (divisor rational))
+  ;; Q=A, R=0
+  (values (copy-poly divisor) 0))
+
+(defmethod polynomial-pseudo-division ((dividend polynomial) (divisor rational))
+  ;; Q=A*B^deg(A), R=0
+  (values
+   (* dividend (^ divisor (deg dividend (slot-value dividend 'variable-name))))
+   0))
+
+(defmethod polynomial-pseudo-division ((dividend rational) (divisor polynomial))
+  (values 0 (copy-poly dividend)))
+
+(defmethod polynomial-pseudo-division ((dividend polynomial) (divisor polynomial))
   "Polynomial pseudo division, returns pseudo-quotient Q and pseudo-remainder
 R such that t * dividend = Q * divisor + R"
   (with-polys dividend divisor
