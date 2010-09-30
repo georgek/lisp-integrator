@@ -56,7 +56,13 @@ polynomials."
                  :variable-name variable
                  :monomials (list nil)))
 
-(defun copy-poly (polynomial)
+(defgeneric copy-poly (polynomial)
+  (:documentation "Returns a copy of the polynomial."))
+
+(defmethod copy-poly ((polynomial rational))
+  polynomial)
+
+(defmethod copy-poly ((polynomial polynomial))
   "Get a new copy of the polynomial."
   (with-poly polynomial
     (make-instance 'polynomial
@@ -347,7 +353,15 @@ raised if the division was not exact."
 
 ;; reduces a constant polynomial to polynomial in lower variable or rational
 ;; number
-(defun reduce-constant-poly (polynomial)
+(defgeneric reduce-constant-poly (polynomial)
+  (:documentation "Reducesa polynomial which is constant in its
+  variable (ie. only has a nonzero coefficient for var^0) to the lower
+  form (ie. lower variable, or rational number)"))
+
+(defmethod reduce-constant-poly ((polynomial rational))
+  polynomial)
+
+(defmethod reduce-constant-poly ((polynomial polynomial))
   (with-poly polynomial
     (if (= (deg polynomial variable-name) 0)
         (if (zerop polynomial)
