@@ -22,8 +22,6 @@
   (with-slots ((num num) (den den)) ratfun
     (when (zerop num)
       (return-from reduce-ratfun 0))
-    (when (and (typep den 'rational) (= den 1))
-      (return-from reduce-ratfun num))
     (when (minusp den)
       (setf num (- num))
       (setf den (- den)))
@@ -34,22 +32,71 @@
     (let ((gcd (gcd num den)))
       (setf num (polynomial-exact-division num gcd)
             den (polynomial-exact-division den gcd)))
-    ratfun))
+    (if (and (typep den 'rational) (= den 1))
+        num
+        ratfun)))
+
+(defmethod copy ((object rational-function))
+  (with-slots (num den) object
+    (make-ratfun (copy num) (copy den))))
 
 ;; printing
 
 (defmethod print-object ((object rational-function) stream)
   (print-unreadable-object (object stream :type t)
     (format stream "(")
-    (pretty-print-polynomial (slot-value object 'num) stream)
+    (print-coefficient (slot-value object 'num) stream)
     (format stream ")/(")
-    (pretty-print-polynomial (slot-value object 'den) stream)
+    (print-coefficient (slot-value object 'den) stream)
     (format stream ")")))
 
 ;; polynomial division
 
-(defmethod 2arg/ ((obj1 polynomial) (obj2 polynomial))
-  (error "Rational functions not implemented yet."))
+(defmethod 2arg/ (obj1 (obj2 polynomial))
+  (make-ratfun obj1 obj2))
 
-(defmethod 2arg/ ((obj1 rational) (obj2 polynomial))
-  (error "Rational functions not implemented yet."))
+;; ratfun arithmetic
+
+(defmethod numerator ((object rational-function))
+  (slot-value object 'num))
+
+(defmethod denominator ((object rational-function))
+  (slot-value object 'den))
+
+(defun ratfun2arg+- (obj1 obj2 op)
+  (make-ratfun (funcall op
+                        (* (numerator obj1) (denominator obj2))
+                        (* (denominator obj1) (numerator obj2)))
+               (* (denominator obj1) (denominator obj2))))
+
+(defmethod 2arg+ ((obj1 rational-function) obj2)
+  (ratfun2arg+- obj1 obj2 #'+))
+  
+(defmethod 2arg+ (obj1 (obj2 rational-function))
+  (ratfun2arg+- obj1 obj2 #'+))
+
+(defmethod 2arg- ((obj1 rational-function) obj2)
+  (ratfun2arg+- obj1 obj2 #'-))
+  
+(defmethod 2arg- (obj1 (obj2 rational-function))
+  (ratfun2arg+- obj1 obj2 #'-))
+
+(defun ratfun2arg* (num1 den1 num2 den2)
+  (make-ratfun (* num1 num2)
+               (* den1 den2)))
+
+(defmethod 2arg* ((obj1 rational-function) obj2)
+  (ratfun2arg* (numerator obj1) (denominator obj1)
+               (numerator obj2) (denominator obj2)))
+
+(defmethod 2arg* (obj1 (obj2 rational-function))
+  (ratfun2arg* (numerator obj1) (denominator obj1)
+               (numerator obj2) (denominator obj2)))
+
+(defmethod 2arg/ ((obj1 rational-function) obj2)
+  (ratfun2arg* (numerator obj1) (denominator obj1)
+               (denominator obj2) (numerator obj2)))
+
+(defmethod 2arg/ (obj1 (obj2 rational-function))
+  (ratfun2arg* (numerator obj1) (denominator obj1)
+               (denominator obj2) (numerator obj2)))
