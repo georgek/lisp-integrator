@@ -10,4 +10,5 @@
                (:file "parser")
                (:file "predicates")
                (:file "arithmetic")
-               (:file "polynomial")))
+               (:file "polynomial")
+               (:file "ratfun"))
