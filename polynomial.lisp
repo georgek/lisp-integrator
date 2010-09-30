@@ -453,8 +453,11 @@ raised if the division was not exact."
   (:documentation "Returns the primitive part of the polynomial, which is the
   polynomial divided by its content."))
 
+;; cont(0) = pp(0) = 0
 (defmethod pp ((polynomial rational))
-  1)
+  (if (zerop polynomial)
+      0
+      1))
 
 (defmethod pp ((polynomial polynomial))
   (polynomial-division polynomial (content polynomial)))
