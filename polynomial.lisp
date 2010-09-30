@@ -264,26 +264,59 @@ polynomials."
   (error "Rational functions not implemented yet."))
 
 ;; polynomial division functions
-(defun polynomial-division (dividend divisor)
-  "Polynomial (Euclidean) division, returns quotient Q and remainder R such
-that dividend = Q * divisor + R"
-  ;; TODO assumes same variable
+(defgeneric polynomial-division (dividend divisor)
+  (:documentation "Polynomial (Euclidean) division, returns quotient Q and
+remainder R such that dividend = Q * divisor + R"))
+
+(defmethod polynomial-division (dividend (divisor rational))
+  (values (/ dividend divisor) 0))
+
+(defmethod polynomial-division ((dividend rational) (divisor polynomial))
+  (values 0 (copy-poly dividend)))
+
+(defmethod polynomial-division ((dividend polynomial) (divisor polynomial))
   (with-polys dividend divisor
-    (let* ((Q (make-zero-poly variable-name1))
-           (R (copy-poly dividend))
-           (d (- (deg R variable-name1) (deg divisor variable-name1)))
-           (S))
-      (do ()
-          ((or
-            (zerop R)
-            (< d 0)))
-        (setf S (make-mono-poly variable-name1
-                                (/ (lc R variable-name1)
-                                   (lc divisor variable-name1)) d)) 
-        (setf Q (+ Q S))
-        (setf R (- R (* divisor S)))
-        (setf d (- (deg R variable-name1) (deg divisor variable-name1))))
-      (values Q R))))
+    (cond
+      ;; different variables
+      ((var-higher-rank-p variable-name1 variable-name2)
+       ;; this might divide - divide each coefficeint of the LHS by the RHS,
+       ;; if one or more does not divide then the whole thing does not divide
+       (let ((Q (copy-poly dividend)))
+         (with-poly Q
+           (dolist (m (nextm monomials))
+             (multiple-value-bind (quotient remainder)
+                 (polynomial-division (coefficient m) divisor)
+               (cond
+                 ((zerop remainder)
+                  ;; this one divided
+                  (setf (coefficient m) quotient))
+                 (t
+                  ;; doesn't divide
+                  (return-from polynomial-division
+                    (values 0 (copy-poly dividend)))))))
+           ;; fully divided
+           (values Q 0))))
+      ((var-higher-rank-p variable-name2 variable-name1)
+       ;; this definitely does not divide
+       (values 0 (copy-poly dividend)))
+      ;; same variable
+      (t
+       (let* ((Q 0)
+              (R (copy-poly dividend))
+              (d (- (deg R variable-name1) (deg divisor variable-name1)))
+              (S))
+         (do ()
+             ((or
+               (zerop R)
+               (< d 0)))
+           (setf S (make-mono-poly variable-name1
+                                   (/ (lc R variable-name1)
+                                      (lc divisor variable-name1)) d))
+           (setf Q (+ Q S))
+           (setf R (- R (* divisor S)))
+           (setf d (- (deg R variable-name1) (deg divisor variable-name1))))
+         (values (reduce-constant-poly Q)
+                 (reduce-constant-poly R)))))))
 
 (defun polynomial-pseudo-division (dividend divisor)
   "Polynomial pseudo division, returns pseudo-quotient Q and pseudo-remainder
