@@ -210,7 +210,11 @@ polynomials."
           (reduce-constant-poly result)))))
 
 (defmethod 2arg- ((obj1 rational) (obj2 polynomial))
-  (2arg- obj2 obj1))
+  (with-poly obj2
+    (let ((result (make-mono-poly variable-name obj1 0)))
+      (dolist (m (nextm monomials))
+        (add-monomial m result #'-))
+      result)))
 
 ;; multiplication
 
