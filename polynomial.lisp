@@ -321,7 +321,39 @@ remainder R such that dividend = Q * divisor + R"))
 (defun polynomial-pseudo-division (dividend divisor)
   "Polynomial pseudo division, returns pseudo-quotient Q and pseudo-remainder
 R such that t * dividend = Q * divisor + R"
-  (copy-poly dividend))
+  (with-polys dividend divisor
+    (cond
+      ((zerop dividend)
+       (values 0 0))
+      ;; different variables
+      ((var-higher-rank-p variable-name1 variable-name2)
+       ;; Q = A*B^deg(A), R = 0
+       (values
+        (* dividend (^ divisor (deg dividend variable-name1)))
+        0))
+      ((var-higher-rank-p variable-name2 variable-name1)
+       (values 0 (copy-poly dividend)))
+      ;; same varibale
+      ((> (deg divisor variable-name1) (deg dividend variable-name2))
+       ;; won't divide so Q=0, R=0
+       (values 0 0))
+      (t
+       (let* ((v variable-name1)
+              (N (+ (- (deg dividend v) (deg divisor v)) 1))
+              (Q 0)
+              (R (copy-poly dividend))
+              (b (lc divisor v))
+              (S))
+         (loop with delta = (- (deg R v) (deg divisor v))
+            while (and (not (zerop R)) (>= delta 0)) do
+              (setf S (* (lc R v) (make-mono-poly v 1 delta)))
+              (format t "Q: ~a, R: ~a, d: ~a, T: ~a, N: ~a~%"
+                      Q R delta S N)
+              (setf N (1- N))
+              (setf Q (+ (* b Q) S))
+              (setf R (- (* b R) (* S divisor)))
+              (setf delta (- (deg R v) (deg divisor v))))
+         (values (* (^ b N) Q) (* (^ b N) R)))))))
 
 (defun polynomial-exact-division (dividend divisor)
   "Polynomial exact division for polynomials which divide exactly, an error is
