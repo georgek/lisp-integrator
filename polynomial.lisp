@@ -347,8 +347,6 @@ R such that t * dividend = Q * divisor + R"
          (loop with delta = (- (deg R v) (deg divisor v))
             while (and (not (zerop R)) (>= delta 0)) do
               (setf S (* (lc R v) (make-mono-poly v 1 delta)))
-              (format t "Q: ~a, R: ~a, d: ~a, T: ~a, N: ~a~%"
-                      Q R delta S N)
               (setf N (1- N))
               (setf Q (+ (* b Q) S))
               (setf R (- (* b R) (* S divisor)))
