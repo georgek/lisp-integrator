@@ -437,3 +437,33 @@ raised if the division was not exact."
             0
             (coefficient (car (nextm monomials))))
         polynomial)))
+
+(defgeneric content (polynomial)
+  (:documentation "Returns the content of the polynomial, which is the gcd of
+  its coefficients."))
+
+(defmethod content ((polynomial rational))
+  polynomial)
+
+(defmethod content ((polynomial polynomial))
+  (apply 'gcd
+         (mapcar #'coefficient (cdr (slot-value polynomial 'monomials)))))
+
+(defgeneric pp (polynomial)
+  (:documentation "Returns the primitive part of the polynomial, which is the
+  polynomial divided by its content."))
+
+(defmethod pp ((polynomial rational))
+  1)
+
+(defmethod pp ((polynomial polynomial))
+  (polynomial-division polynomial (content polynomial)))
+
+;; utility functions for getting at the individual results of pseudo-division
+(defun pquo (dividend divisor)
+  "Returns the pseudo-quotient of the dividend and divisor."
+  (car (multiple-value-list (polynomial-pseudo-division dividend divisor))))
+
+(defun prem (dividend divisor)
+  "Returns the pseudo-quotient of the dividend and divisor."
+  (cadr (multiple-value-list (polynomial-pseudo-division dividend divisor))))
