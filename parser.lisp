@@ -18,13 +18,13 @@
 ;; returns function to be passed to parser
 (defun math-lexer (string)
   ;; get tokens from string using lexer
-  (let ((tokens (remove-if #'(lambda (x) (eql (car x) 'space))
+  (let ((tokens (remove-if (lambda (x) (eql (car x) 'space))
                            (lex-all 'scan-math string))))
-    #'(lambda ()
-        (let ((token (pop tokens)))
-          (if (null token)
-              (values nil nil)
-              (values (car token) (cdr token)))))))
+    (lambda ()
+      (let ((token (pop tokens)))
+        (if (null token)
+            (values nil nil)
+            (values (car token) (cdr token)))))))
 
 ;;; parsing stuff
 
