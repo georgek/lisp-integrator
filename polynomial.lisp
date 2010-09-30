@@ -253,8 +253,6 @@ polynomials."
   (multiply-poly-by-constant obj2 obj1))
 
 ;; division
-(defmethod 2arg/ ((obj1 polynomial) (obj2 polynomial))
-  (error "Rational functions not implemented yet."))
 
 (defmethod 2arg/ ((obj1 polynomial) (obj2 rational))
   (with-poly obj1
@@ -263,9 +261,6 @@ polynomials."
         (add-monomial (monomial (/ (coefficient m) obj2) (power m))
                       result #'+))
       (reduce-constant-poly result))))
-
-(defmethod 2arg/ ((obj1 rational) (obj2 polynomial))
-  (error "Rational functions not implemented yet."))
 
 ;; polynomial division functions
 (defgeneric polynomial-division (dividend divisor)
