@@ -23,23 +23,23 @@
 
 (defmethod 2arg-gcd ((poly1 polynomial) (poly2 rational))
   ;; this is simply the gcd of contents since gcd of pp's is 1
-  (gcd (content poly1) poly2))
+  (gcd (content poly1 (slot-value poly1 'variable-name)) poly2))
 
 (defmethod 2arg-gcd ((poly1 rational) (poly2 polynomial))
   (2arg-gcd poly2 poly1))
 
 (defmethod 2arg-gcd ((poly1 polynomial) (poly2 polynomial))
-  (wwgcd poly1 poly2))
+  (wwgcd poly1 poly2 (poly-highest-var poly1 poly2)))
 
 ;; WWGCD works before I can be bothered to implement a better one
-(defun wwgcd (a b)
-  (let ((c (pp a))
-        (d (pp b))
+(defun wwgcd (a b var)
+  (let ((c (pp a var))
+        (d (pp b var))
         (r 0)
         (gamma))
     (loop while (not (zerop d)) do
          (setf r (prem c d))
          (setf c d)
-         (setf d (pp r)))
-    (setf gamma (gcd (content a) (content b)))
+         (setf d (pp r var)))
+    (setf gamma (gcd (content a var) (content b var)))
     (* gamma c)))

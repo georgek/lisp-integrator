@@ -465,29 +465,39 @@ raised if the division was not exact."
               (mapcar (lambda (x) (poly-rat-part (coefficient x)))
                       (cdr monomials)))))))
 
-(defgeneric content (polynomial)
+(defgeneric content (polynomial variable)
   (:documentation "Returns the content of the polynomial, which is the gcd of
   its coefficients."))
 
-(defmethod content ((polynomial rational))
+(defmethod content ((polynomial rational) variable)
   polynomial)
 
-(defmethod content ((polynomial polynomial))
-  (apply 'gcd
-         (mapcar #'coefficient (cdr (slot-value polynomial 'monomials)))))
+(defmethod content ((polynomial polynomial) variable)
+  (with-poly polynomial
+    (cond
+      ((zerop polynomial)
+       (return-from content 0))
+      ;; different variables
+      ((var-higher-rank-p variable variable-name)
+       (copy polynomial))
+      ((var-higher-rank-p variable-name variable)
+       (error "Trying to get content in higher ranking variable!"))
+      (t
+       (apply 'gcd
+              (mapcar #'coefficient (cdr monomials)))))))
 
-(defgeneric pp (polynomial)
+(defgeneric pp (polynomial variable)
   (:documentation "Returns the primitive part of the polynomial, which is the
   polynomial divided by its content."))
 
 ;; cont(0) = pp(0) = 0
-(defmethod pp ((polynomial rational))
+(defmethod pp ((polynomial rational) variable)
   (if (zerop polynomial)
       0
       1))
 
-(defmethod pp ((polynomial polynomial))
-  (polynomial-division polynomial (content polynomial)))
+(defmethod pp ((polynomial polynomial) variable)
+  (polynomial-division polynomial (content polynomial variable)))
 
 ;; utility functions for getting at the individual results of pseudo-division
 (defun pquo (dividend divisor)
