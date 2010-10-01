@@ -4,6 +4,7 @@
   :author "Borbus"
   :licence "GNU GPLv3"
   :depends-on ("cl-ppcre" "dso-lex" "yacc")
+  :serial t
   :components ((:file "packages")
                (:file "utils")
                (:file "tree")
@@ -11,5 +12,7 @@
                (:file "generic")
                (:file "predicates")
                (:file "arithmetic")
+               (:file "variables")
                (:file "polynomial")
-               (:file "ratfun"))
+               (:file "gcd")
+               (:file "ratfun")))

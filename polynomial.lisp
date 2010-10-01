@@ -87,11 +87,12 @@ polynomials."
 (defun (setf nextm) (next monomial)
   (setf (cdr monomial) next))
 
-;;; variables
-
-;; just use lexical ordering of variable names for now
-(defun var-higher-rank-p (var1 var2)
-  (string< (symbol-name var1) (symbol-name var2)))
+;; temp version, uses lexical ordering for now
+(defun poly-highest-var (poly1 poly2)
+  (with-polys poly1 poly2
+    (if (var-higher-rank-p variable-name1 variable-name2)
+        variable-name1
+        variable-name2)))
 
 ;;; printing functions
 
@@ -140,7 +141,7 @@ polynomials."
           (endp (nextm m))
           (< (power (car (nextm m))) (power monomial)))
          (let ((newm (push (monomial (coefficient monomial) (power monomial))
-                                     (nextm m))))
+                           (nextm m))))
            (setf (coefficient (car newm))
                  (funcall op (coefficient (car newm))))
            (setf (cdr m) newm)))
