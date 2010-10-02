@@ -345,8 +345,8 @@ R such that t * dividend = Q * divisor + R"
        (values 0 (copy dividend)))
       ;; same varibale
       ((> (deg divisor variable-name1) (deg dividend variable-name2))
-       ;; won't divide so Q=0, R=0
-       (values 0 0))
+       ;; won't divide so Q=0, R=A
+       (values 0 (copy dividend)))
       (t
        (let* ((v variable-name1)
               (N (+ (- (deg dividend v) (deg divisor v)) 1))
