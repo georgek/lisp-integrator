@@ -13,7 +13,7 @@
     (with-poly result
       (cond
         ((var-higher-rank-p variable variable-name)
-         0)
+         (setf result 0))
         ((var-higher-rank-p variable-name variable)
          (error "Trying to differentiate in lower ranking variable!"))
         (t
