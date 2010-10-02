@@ -44,11 +44,9 @@
 
 (defmethod print-object ((object rational-function) stream)
   (print-unreadable-object (object stream :type t)
-    (format stream "(")
     (print-coefficient (slot-value object 'num) stream)
-    (format stream ")/(")
-    (print-coefficient (slot-value object 'den) stream)
-    (format stream ")")))
+    (format stream "/")
+    (print-coefficient (slot-value object 'den) stream)))
 
 ;; polynomial division
 
