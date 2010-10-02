@@ -15,4 +15,5 @@
                (:file "variables")
                (:file "polynomial")
                (:file "gcd")
-               (:file "ratfun")))
+               (:file "ratfun")
+               (:file "differentiation")))
