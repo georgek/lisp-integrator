@@ -92,6 +92,8 @@
                (numerator obj2) (denominator obj2)))
 
 (defmethod 2arg/ ((obj1 rational-function) obj2)
+  (when (zerop obj2)
+    (error 'division-by-zero))
   (ratfun2arg* (numerator obj1) (denominator obj1)
                (denominator obj2) (numerator obj2)))
 
