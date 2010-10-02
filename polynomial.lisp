@@ -150,9 +150,8 @@ polynomials."
                (funcall op (coefficient (car (nextm m)))
                         (coefficient monomial)))
          ;; remove zeros
-         (when (= (coefficient (car (nextm m))) 0)
-           (setf (cdr m) (cdr (nextm m))))
-         )))))
+         (when (zerop (coefficient (car (nextm m))))
+           (setf (cdr m) (cdr (nextm m)))))))))
 
 ;; polynomial addition and subtraction have the same algorithm but using a
 ;; different operator
@@ -206,10 +205,10 @@ polynomials."
 
 (defmethod 2arg- ((obj1 rational) (obj2 polynomial))
   (with-poly obj2
-    (let ((result (make-mono-poly variable-name obj1 0)))
+    (let ((result (make-zero-poly variable-name)))
       (dolist (m (nextm monomials))
         (add-monomial m result #'-))
-      result)))
+      (+ result obj1))))
 
 ;; multiplication
 
