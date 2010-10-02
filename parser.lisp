@@ -72,4 +72,5 @@
             ;; (format t "~%~%")
             (format t "~a~%" (eval tree)))))))
 
-
+(defun parse-infix (string)
+  (eval (parse-with-lexer (math-lexer string) *math-parser*)))
