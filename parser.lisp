@@ -74,3 +74,9 @@
 
 (defun parse-infix (string)
   (eval (parse-with-lexer (math-lexer string) *math-parser*)))
+
+(defun parse-infix-mac (stream subchar arg)
+  (let ((string (read stream)))
+    `(parse-infix ,string)))
+
+(set-dispatch-macro-character #\# #\i #'parse-infix-mac)
