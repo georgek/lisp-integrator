@@ -218,12 +218,16 @@ polynomials."
 ;; multiplying a polynomial by a constant, for multiplication with a rational
 ;; or a polynomial in another variable
 (defun multiply-poly-by-constant (polynomial constant)
-  (with-poly polynomial
-    (let ((result (make-zero-poly variable-name)))
-      (dolist (m (nextm monomials))
-        (add-monomial (monomial (* (coefficient m) constant)  (power m))
-                      result #'+))
-      (reduce-constant-poly result))))
+  (cond
+    ((zerop constant)
+     0)
+    (t
+     (with-poly polynomial
+       (let ((result (make-zero-poly variable-name)))
+         (dolist (m (nextm monomials))
+           (add-monomial (monomial (* (coefficient m) constant)  (power m))
+                         result #'+))
+         (reduce-constant-poly result))))))
 
 (defmethod 2arg* ((obj1 polynomial) (obj2 polynomial))
   (with-polys obj1 obj2
