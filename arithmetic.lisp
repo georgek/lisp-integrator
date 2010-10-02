@@ -39,13 +39,16 @@
 (defmethod ^ (base power)
   (if (zerop power)
       1
-      (let ((result (copy base)))
-        (do ((mask (ash 1 (- (integer-length power) 2)) (ash mask -1)))
+      (let ((result (copy base))
+            (pow (abs power)))
+        (do ((mask (ash 1 (- (integer-length pow) 2)) (ash mask -1)))
             ((= mask 0))
-          (if (logtest mask power)
+          (if (logtest mask pow)
               (setf result (* (* result result) base))
               (setf result (* result result))))
-        result)))
+        (if (minusp power)
+            (/ 1 result)
+            result))))
 
 ;; n-ary versions
 (defun + (&rest objs)
