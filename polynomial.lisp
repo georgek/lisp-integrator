@@ -484,8 +484,11 @@ raised if the division was not exact."
       ((var-higher-rank-p variable-name variable)
        (error "Trying to get content in higher ranking variable!"))
       (t
-       (apply 'gcd
-              (mapcar #'coefficient (cdr monomials)))))))
+       (let ((cont
+              (apply 'gcd (mapcar #'coefficient (cdr monomials)))))
+         (if (minusp polynomial)
+             (- cont)
+             cont))))))
 
 (defgeneric pp (polynomial variable)
   (:documentation "Returns the primitive part of the polynomial, which is the
