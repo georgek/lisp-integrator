@@ -16,4 +16,5 @@
                (:file "polynomial")
                (:file "gcd")
                (:file "ratfun")
-               (:file "differentiation")))
+               (:file "differentiation")
+               (:file "integration")))
