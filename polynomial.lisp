@@ -80,6 +80,9 @@ polynomials."
   "Get the power of the monomial."
   (cdr monomial))
 
+(defun (setf power) (power monomial)
+  (setf (cdr monomial) power))
+
 (defun nextm (monomial)
   "Get the next monomial in the list, or nil if there is none."
   (cdr monomial))
