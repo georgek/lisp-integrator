@@ -88,3 +88,8 @@
 
 (defmethod denominator ((object rational))
   (cl:denominator object))
+
+(defun abs (object)
+  (if (minusp object)
+      (- object)
+      object))

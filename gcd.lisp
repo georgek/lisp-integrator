@@ -10,7 +10,7 @@
     ((null polynomials)
      (cl:gcd))
     ((endp (cdr polynomials))
-     (car polynomials))
+     (abs (car polynomials)))
     (t
      (reduce #'2arg-gcd polynomials))))
 
