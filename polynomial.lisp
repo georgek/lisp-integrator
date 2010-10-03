@@ -507,7 +507,7 @@ raised if the division was not exact."
       1))
 
 (defmethod pp ((polynomial polynomial) variable)
-  (polynomial-division polynomial (content polynomial variable)))
+  (polynomial-exact-division polynomial (content polynomial variable)))
 
 ;; utility functions for getting at the individual results of pseudo-division
 (defun pquo (dividend divisor)
