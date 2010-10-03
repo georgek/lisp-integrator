@@ -17,15 +17,16 @@
         ((var-higher-rank-p variable-name variable)
          (error "Trying to differentiate in lower ranking variable!"))
         (t
-         (loop for m on monomials do
-              (cond
-                ((zerop (power (car (nextm m))))
-                 (setf (cdr m) (cddr m)))
-                (t
-                 (setf (coefficient (car (nextm m)))
-                       (* (coefficient (car (nextm m)))
-                          (power (car (nextm m)))))
-                 (decf (power (car (nextm m))))))))))
+         (loop for m = monomials then (nextm m)
+            while (not (endp (cdr m))) do
+            (cond
+              ((zerop (power (car (nextm m))))
+               (setf (cdr m) (cddr m)))
+              (t
+               (setf (coefficient (car (nextm m)))
+                     (* (coefficient (car (nextm m)))
+                        (power (car (nextm m)))))
+               (decf (power (car (nextm m))))))))))
     result))
 
 (defmethod differentiate ((object rational-function) variable)
