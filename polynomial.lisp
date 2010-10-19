@@ -90,8 +90,16 @@ polynomials."
 (defun (setf nextm) (next monomial)
   (setf (cdr monomial) next))
 
-;; temp version, uses lexical ordering for now
-(defun poly-highest-var (poly1 poly2)
+(defgeneric poly-highest-var (poly1 poly2)
+  (:documentation "Returns the highest ranking variable in either polynomial."))
+
+(defmethod poly-highest-var ((poly1 polynomial) (poly2 rational))
+  (slot-value poly1 'variable-name))
+
+(defmethod poly-highest-var ((poly1 rational) (poly2 polynomial))
+  (slot-value poly2 'variable-name))
+
+(defmethod poly-highest-var ((poly1 polynomial) (poly2 polynomial))
   (with-polys poly1 poly2
     (if (var-higher-rank-p variable-name1 variable-name2)
         variable-name1
