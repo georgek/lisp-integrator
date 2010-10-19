@@ -6,7 +6,7 @@
 
 (deflexer scan-math ()
   ("0|[1-9][0-9]*" integer parse-integer)
-  ("[a-zA-Z]+" variable make-poly-node)
+  ("[a-zA-Z]+" name)
   ("-" - intern)
   ("\\+" + intern)
   ("\\*" * intern)
@@ -38,12 +38,25 @@
   (defun k-2-3 (a b c)
     "Second out of three"
     (declare (ignore a c))
-    b))
+    b)
+
+  (defun exp-list-append (a b c)
+    "Append expression to expression list."
+    (declare (ignore b))
+    (append a (list c)))
+  
+  (defun if2p (a b c d)
+    (declare (ignore b d))
+    (append (list (read-from-string a)) c)))
 
 (define-parser *math-parser*
-  (:start-symbol expression)
-  (:terminals (integer variable - + * / ^ \( \) \,))
+  (:start-symbol expression-list)
+  (:terminals (integer name - + * / ^ \( \) \,))
   (:precedence ((:left ^) (:left * /) (:left + -)))
+
+  (expression-list
+   (expression-list \, expression #'exp-list-append)
+   (expression #'list))
 
   (expression
    (expression + expression #'i2p)
@@ -55,9 +68,10 @@
 
   (term
    integer
-   variable
-   (- term)
-   (\( expression \) #'k-2-3)))
+   (name #'make-poly-node)              ; variables
+   (- term)                             ; unary minus
+   (\( expression \) #'k-2-3)           ; brackets
+   (name \( expression-list \) #'if2p))) ; functions
 
 (defun read-inputs ()
   (do ((end nil))
@@ -66,16 +80,21 @@
     (let ((input (read-line)))
       (if (string= input "quit")
           (setf end t)
-          (let ((tree (parse-with-lexer (math-lexer input) *math-parser*)))
-            ;; (print-prefix tree)
-            ;; (print-infix tree)
+          (let ((exp-list (parse-with-lexer (math-lexer input) *math-parser*)))
+            ;; (print-prefix exp-list)
+            ;; (print-infix exp-list)
             ;; (format t "~%~%")
-            (format t "~a~%" (eval tree)))))))
+            (loop for tree on exp-list do
+                 (format t "~a" (eval (car tree)))
+                 (unless (endp (cdr tree))
+                   (format t ", ")))
+            (format t "~%"))))))
 
 (defun parse-infix (string)
   (eval (parse-with-lexer (math-lexer string) *math-parser*)))
 
 (defun parse-infix-mac (stream subchar arg)
+  (declare (ignore subchar arg))
   (let ((string (read stream)))
     `(parse-infix ,string)))
 
