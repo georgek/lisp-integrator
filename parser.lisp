@@ -2,7 +2,7 @@
 
 ;;; lexing stuff
 (defun make-poly-node (var)
-  (make-mono-poly (intern var) 1 1))
+  (make-mono-poly (add-var (intern var)) 1 1))
 
 (deflexer scan-math ()
   ("0|[1-9][0-9]*" integer parse-integer)
@@ -80,7 +80,8 @@
     (let ((input (read-line)))
       (if (string= input "quit")
           (setf end t)
-          (let ((exp-list (parse-with-lexer (math-lexer input) *math-parser*)))
+          (let* ((*variable-table* (make-hash-table))
+                 (exp-list (parse-with-lexer (math-lexer input) *math-parser*)))
             ;; (print-prefix exp-list)
             ;; (print-infix exp-list)
             ;; (format t "~%~%")
