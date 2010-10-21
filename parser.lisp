@@ -1,9 +1,6 @@
 (in-package :gk-integrator)
 
 ;;; lexing stuff
-(defun make-poly-node (var)
-  (make-mono-poly (add-var (intern var)) 1 1))
-
 (deflexer scan-math ()
   ("0|[1-9][0-9]*" integer parse-integer)
   ("[a-zA-Z]+" name)
@@ -47,7 +44,10 @@
   
   (defun if2p (a b c d)
     (declare (ignore b d))
-    (append (list (read-from-string a)) c)))
+    (append (list (read-from-string a)) c))
+  
+  (defun make-poly-node (var)
+    (make-mono-poly (add-var (intern var)) 1 1)))
 
 (define-parser *math-parser*
   (:start-symbol expression-list)
